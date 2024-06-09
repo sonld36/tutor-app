@@ -1,0 +1,14 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+
+export const baseApiSlice = createApi({
+    reducerPath: "api",
+    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080",
+        prepareHeaders: (headers, { getState }) => {
+    
+            headers.set("authorization", `Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRXzBvby10V0tQelhfeGVaQmtZVFAySWNTakhFOHlMaFVWbWU3VHVlZERnIn0.eyJleHAiOjE3MTc5ODU2ODQsImlhdCI6MTcxNzk0OTY4NCwianRpIjoiYjY0ZmVjM2UtNjlhYy00OTFmLTliMzctODYwNWNjNWI5ZTlmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy90dXRvci1taWNyb3NlcnZpY2VzLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjMyNDljZjc3LTU5MWQtNDdiMS04MDZkLTU2OGRjODBmYzVhMyIsInR5cCI6IkJlYXJlciIsImF6cCI6InR1dG9yLWdhdGV3YXktY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjJjYjM2NTE0LTE1ODAtNDkxZi05MzJkLTJkOTI0MWFiMTBjYyIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInN0dWRlbnQiLCJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtdHV0b3ItbWljcm9zZXJ2aWNlcy1yZWFsbSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwic2lkIjoiMmNiMzY1MTQtMTU4MC00OTFmLTkzMmQtMmQ5MjQxYWIxMGNjIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJoaWV1IG5ndXllbiBkaW5oIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiaGlldW5kMTEiLCJnaXZlbl9uYW1lIjoiaGlldSBuZ3V5ZW4iLCJmYW1pbHlfbmFtZSI6ImRpbmgiLCJlbWFpbCI6ImhpZXVuZDE5MDExQGdtYWlsLmNvbSJ9.P606uyPCvww-oDwIjn0CkBmfAyiQQsB8PVBEXPxkd3UbnPqk_nBRihFtxHKK7a_SxTVdDhE_C83zD6Jy9uKLQlfzLDIs2PU9gR5lrljl9a7SxsewcikbuMlnTen3U9LR_AYWS_cxH4N6RoY9d2DApfaym_AnkApMORuWg4Z2s6AyFDSyflowtw025UGtBf-rMYJoGfwzDzmOl59qKLrS1wsn-skZbAcunENKozWm9IQINuiO896ea8GMuBHIasMusEbuXrPJz1HCw9-HsVXayrGw2B21PXxqz3c0_pYNui7uB6myi28uiXqyybj3oXYMxXsgRcxwDDQdfYa7X4e1iw`)
+            return headers;
+        }
+     }),
+    endpoints: () => ({}),
+});
