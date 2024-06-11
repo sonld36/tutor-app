@@ -2,6 +2,7 @@ import React from "react";
 import IconPresent from "./IconPresent";
 import Button from "./Button";
 import LinkUnderLine from "./LinkUnderLine";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
@@ -68,16 +69,17 @@ function Navbar() {
             </div>
           </div>
           <div className="flex items-center justify-between w-full md:w-auto md:order-3 space-x-3">
+            <Link to="/register">
             <LinkUnderLine
-              onClick={(e) => e.preventDefault()}
               href="#"
               Children="Đăng ký"
             />
+            </Link>
+            <Link to="/login">
             <LinkUnderLine
-              onClick={(e) => e.preventDefault()}
               href="#"
               Children="Đăng nhập"
-            />
+            /></Link>
           </div>
           <div
             className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"

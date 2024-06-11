@@ -1,22 +1,21 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Navbar from "../../components/Navbar";
-import CoursePage from "./CoursePage";
-import TutorPage from "./TutorPage";
-import CourseBanner from "../../components/CourseBanner";
-import CourseVideoList from "../../components/CourseVideoList";
-import CourseDetail from "../CourseDetail";
+import { Outlet, useNavigation } from "react-router-dom";
 
 function MainPage(props: PropTypes.InferProps<typeof MainPage.propTypes>) {
+  const navigation = useNavigation();
   return (
     <div>
       <Navbar />
-      {/* <div className="py-12 bg-gray-100">
-        <CoursePage />
-        <TutorPage />
-      </div> */}
-
-      <CourseDetail courseId={24} />
+      <div className={`
+        bg-gray-100
+        ${navigation.state === "loading" ? "loading" : ""}
+      `}
+        id="detail"
+      >
+        <Outlet />
+      </div>
     </div>
   );
 }

@@ -21,8 +21,8 @@ function LinkUnderLine(
       <a
         href={props.href}
         onMouseEnter={handleMouseEnter}
+        onClick={props.onClick || (() => {})}
         onMouseLeave={handleMouseLeave}
-        onClick={props.onClick}
         className="relative inline-block text-base font-medium text-indigo-500"
       >
         <span className="block">{props.Children}</span>
@@ -40,7 +40,7 @@ function LinkUnderLine(
 
 LinkUnderLine.propTypes = {
   Children: PropTypes.node.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
   disabled: PropTypes.bool,
   href: PropTypes.string.isRequired,
 };
