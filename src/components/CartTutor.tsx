@@ -87,7 +87,7 @@ function CartTutor(props: PropTypes.InferProps<typeof CartTutor.propTypes>) {
           >
             View Schedule
           </button>
-          <ScheduleDateTime />
+          {/* <ScheduleDateTime /> */}
         </div>
       </div>
     </>

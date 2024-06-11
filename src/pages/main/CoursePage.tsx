@@ -1,7 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CartCourse from "../../components/CartCourse";
+import { useGetCoursesMutation } from "../../services/courseApi";
 
 function CoursePage() {
+  const [getCourses, { data, error, isLoading }] = useGetCoursesMutation();
+
+  useEffect(() => {
+    getCourses(1);
+  }, []);
+
   return (
     <>
       <div className="container flex flex-col items-center justify-center px-4 pt-2 pb-8 mx-auto sm:px-6 lg:px-8">
@@ -26,25 +33,18 @@ function CoursePage() {
           View Our Full Library of Courses
         </a>
 
-        <div className="grid max-w-lg gap-5 mx-auto mt-12 md:grid-cols-2 lg:grid-cols-3 md:max-w-none">
-          <CartCourse
-            title="Mastering Livewire"
-            description="Tired of Vue or React? Why not try Livewire, the fullstack framework for dynamic interfaces."
-            category="Livewire"
-            review={12}
-          />
-          <CartCourse
-            title="Mastering Tailwind"
-            description="Learn how to use Tailwind CSS to create beautiful designs without leaving your HTML."
-            category="Tailwind"
-            review={8}
-          />
-          <CartCourse
-            title="Mastering Jetstream"
-            description="Jetstream is a beautifully designed application scaffolding for Laravel."
-            category="Jetstream"
-            review={5}
-          />
+        <div className="grid max-w-lg gap-x-20 gap-y-10 mx-auto mt-12 md:grid-cols-2 lg:grid-cols-3 md:max-w-none">
+          {data?.courses.courses.map((course) => (
+            <CartCourse
+              key={course.id}
+              author={course.tutor.first_name + " " + course.tutor.last_name}
+              title={course.name}
+              description={course.description}
+              category={course.subject}
+              review={course.price}
+              thumbnail={course.thumbnail_path}
+            />
+          ))}
         </div>
       </div>
     </>

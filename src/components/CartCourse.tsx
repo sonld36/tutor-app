@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
+import { useGetCourseThumbnailMutation } from "../services/courseApi";
 
 function CartCourse(props: PropTypes.InferProps<typeof CartCourse.propTypes>) {
   return (
@@ -8,7 +9,11 @@ function CartCourse(props: PropTypes.InferProps<typeof CartCourse.propTypes>) {
         <div className="relative flex-shrink-0">
           <img
             className="object-cover w-full h-56"
-            src="https://cdn.devdojo.com/episode/images/August2020/laravel-livewire-introduction1.jpg"
+            src={
+              props.thumbnail && props.thumbnail !== null
+                ? `http://localhost:8080/courseapi/course/thumbnail?thumbnailPath=${props.thumbnail}`
+                : "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
+            }
             alt="Cover image for livewire introduction course."
           />
           <span className="absolute bottom-0 right-0 inline-flex items-center px-3 py-1 mr-4 -mb-3 text-xs font-medium leading-tight text-gray-800 bg-gray-100 border rounded-full">
@@ -69,6 +74,7 @@ CartCourse.propTypes = {
   description: PropTypes.string,
   category: PropTypes.string,
   author: PropTypes.instanceOf(Object),
+  thumbnail: PropTypes.string,
 };
 
 export default CartCourse;
