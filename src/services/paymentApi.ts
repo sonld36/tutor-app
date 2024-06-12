@@ -1,3 +1,4 @@
+import { redirect } from "react-router-dom";
 import { VNPayResponse } from "../const/dtos";
 import { baseApiSlice } from "./baseService";
 
@@ -9,7 +10,14 @@ export const paymentApiSlice = baseApiSlice.injectEndpoints({
                 method: "GET",
                 params: {amount, bank_code: "NCB"},
                 
-            })
+            }),
+            transformResponse(baseQueryReturnValue: VNPayResponse, meta, arg) {
+                if (baseQueryReturnValue.vnpay_response) {
+                    window.location.href
+                    = baseQueryReturnValue.vnpay_response.payment_url;
+                }
+                return baseQueryReturnValue;
+            }
         }),
     }),
     overrideExisting: false,

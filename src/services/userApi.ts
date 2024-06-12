@@ -1,4 +1,4 @@
-import { LoginDTO, RegisterDTO, TutorListResponse, TutorResponse, UserResponse, UserRoot } from "../const/dtos";
+import { AccountResponse, LoginDTO, LoginResponse, RegisterDTO, TutorListResponse, TutorResponse, UserResponse, UserRoot } from "../const/dtos";
 import { baseApiSlice } from "./baseService";
 
 export const userApiSlice = baseApiSlice.injectEndpoints({
@@ -10,12 +10,19 @@ export const userApiSlice = baseApiSlice.injectEndpoints({
                 body: data,
             })
         }),
-        login: builder.mutation<UserRoot<UserResponse>, UserRoot<LoginDTO>>({
+        login: builder.mutation<LoginResponse, UserRoot<LoginDTO>>({
             query: (data: UserRoot<LoginDTO>) => ({
                 url: "/accounting/user/login",
                 method: "POST",
                 body: data,
-            })
+            }),
+            transformResponse(baseQueryReturnValue: LoginResponse, meta, arg) {
+                if (baseQueryReturnValue.login) {
+                    localStorage.setItem("token", baseQueryReturnValue.login.access_token);
+                }
+                
+                return baseQueryReturnValue;
+            },
         }),
         getTutors: builder.mutation<TutorListResponse, number>({
             query: (page: number) => ({
@@ -23,10 +30,16 @@ export const userApiSlice = baseApiSlice.injectEndpoints({
                 params: { page },
                 method: "GET",
             }),
-           
+        }),
+
+        checkInitUser: builder.query<AccountResponse, void>({
+            query: () => ({
+                url: "/accounting/user",
+                method: "GET",
+            }),
         }),
     }),
     overrideExisting: false,
 });
 
-export const { useLoginMutation, useGetTutorsMutation } = userApiSlice;
+export const { useLoginMutation, useGetTutorsMutation, useCheckInitUserQuery } = userApiSlice;

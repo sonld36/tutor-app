@@ -2,41 +2,21 @@ import React from "react";
 import PropTypes from "prop-types";
 import { CourseResponse } from "../const/dtos";
 import { useEnrollCourseMutation } from "../services/courseApi";
-import { useCreatePaymentMutation } from "../services/paymentApi";
+import {
+  paymentApiSlice,
+  useCreatePaymentMutation,
+} from "../services/paymentApi";
 
 interface CourseBannerProps {
   course?: CourseResponse;
 }
 
 function CourseBanner({ course }: CourseBannerProps) {
-  const [enrollCourse, { data, error, isLoading, isSuccess, isError }] =
-    useEnrollCourseMutation();
-
-  const [
-    createPayment,
-    {
-      data: payment,
-      error: paymentError,
-      isLoading: isPaymentLoading,
-      isSuccess: isPaymentSucces,
-      isError: isPaymentError,
-    },
-  ] = useCreatePaymentMutation();
+  const [enrollCourse] = useEnrollCourseMutation();
 
   const handleEnrollCourse = async () => {
     if (course) {
       await enrollCourse(course.id);
-      if (isSuccess) {
-        const transactionId = data?.course_enrollment.transaction_id;
-        await createPayment({
-          transactionId: transactionId,
-          amount: course.price,
-        });
-
-        console.log(payment?.vnpay_response.payment_url);
-
-        window.location.href = payment?.vnpay_response.payment_url || "";
-      }
     }
   };
   return (

@@ -4,14 +4,16 @@ import Button from "../../components/Button";
 import { useForm } from "react-hook-form";
 import { LoginDTO, UserRoot } from "../../const/dtos";
 import { useLoginMutation } from "../../services/userApi";
+import { redirect } from "react-router-dom";
 
 function Login() {
   const { register, getValues } = useForm<LoginDTO>();
-  const [login, result] = useLoginMutation();
+  const [login, { isLoading, isSuccess }] = useLoginMutation();
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
     const data = getValues();
+
     const loginDto: UserRoot<LoginDTO> = {
       user: {
         username: data.username,
@@ -20,7 +22,9 @@ function Login() {
     };
 
     await login(loginDto);
-    console.log(result);
+    if (isSuccess) {
+      redirect("/");
+    }
   };
 
   return (

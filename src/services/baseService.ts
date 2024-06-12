@@ -4,11 +4,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const baseApiSlice = createApi({
     reducerPath: "api",
     baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080",
-        prepareHeaders: (headers, { getState }) => {
-    
-            headers.set("authorization", `Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJRXzBvby10V0tQelhfeGVaQmtZVFAySWNTakhFOHlMaFVWbWU3VHVlZERnIn0.eyJleHAiOjE3MTgwNjg1ODcsImlhdCI6MTcxODAzMjU4NywianRpIjoiOGFhYzk2NzEtZDEwNi00YjA2LTg5N2MtNTllMjE1OTgwZWIxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy90dXRvci1taWNyb3NlcnZpY2VzLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjMyNDljZjc3LTU5MWQtNDdiMS04MDZkLTU2OGRjODBmYzVhMyIsInR5cCI6IkJlYXJlciIsImF6cCI6InR1dG9yLWdhdGV3YXktY2xpZW50Iiwic2Vzc2lvbl9zdGF0ZSI6IjUyOTI2ZjQwLTgyMWMtNDVkZS1iMGFkLWYzYjA5ZDM1NTg3YSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInN0dWRlbnQiLCJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtdHV0b3ItbWljcm9zZXJ2aWNlcy1yZWFsbSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwic2lkIjoiNTI5MjZmNDAtODIxYy00NWRlLWIwYWQtZjNiMDlkMzU1ODdhIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJoaWV1IG5ndXllbiBkaW5oIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiaGlldW5kMTEiLCJnaXZlbl9uYW1lIjoiaGlldSBuZ3V5ZW4iLCJmYW1pbHlfbmFtZSI6ImRpbmgiLCJlbWFpbCI6ImhpZXVuZDE5MDExQGdtYWlsLmNvbSJ9.LLnA1DAE-jY8ghF0bCmdTKU_QKCUKdSxtP_5xMjZ5h3mCiBBKXlftx4o1oz8kjsRXxE5v87zusawkADzg0TtOzoOxcvhmcs8VFyjyLs5jabG05FQiVcAFw4M9XXW2FPGp4eZcRjH-Qcasec-CBAf4UXj2tCSNZ8hKH-TIaIDlrPn5lr5beVxoxmcx8bo6CrHmu_OKV6zY-FPw-H_nAgvJ0mHZY8T-x_KlojiSuM2AHzZ6oWiMqSftv67OBkqHky18o7xoK5aVKeRXqECTcBjNWug9Shqdwqtp5p6CEhtlMNjvOKpIfLCpkx4AoPc2Jj7t46hfziOklIXJybznSZLWw`)
-            return headers;
+    prepareHeaders: (headers, { getState }) => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
         }
+        return headers;
+    }
      }),
     endpoints: () => ({}),
 });

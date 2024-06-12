@@ -3,19 +3,25 @@ import IconPresent from "./IconPresent";
 import Button from "./Button";
 import LinkUnderLine from "./LinkUnderLine";
 import { Link } from "react-router-dom";
+import { AccountResponse, UserResponse } from "../const/dtos";
+import Avatar from "./Avatar";
 
-function Navbar() {
+interface NavbarProps {
+  account?: AccountResponse;
+}
+
+function Navbar(props: NavbarProps) {
   return (
     <>
-      <nav className="bg-gray-50 border-gray-200 shadow-md">
+      <nav className="bg-gray-50 border-gray-200 shadow-md sticky z-10 top-0">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <a
-            href="#"
+          <Link
+            to={"/"}
             className="flex items-center space-x-0 rtl:space-x-reverse"
           >
             <IconPresent size="vsm" />
             <span className="font-thin text-lg text-slate-800">Tutors</span>
-          </a>
+          </Link>
           <div className="flex md:order-2">
             <button
               type="button"
@@ -69,17 +75,25 @@ function Navbar() {
             </div>
           </div>
           <div className="flex items-center justify-between w-full md:w-auto md:order-3 space-x-3">
-            <Link to="/register">
-            <LinkUnderLine
-              href="#"
-              Children="Đăng ký"
-            />
-            </Link>
-            <Link to="/login">
-            <LinkUnderLine
-              href="#"
-              Children="Đăng nhập"
-            /></Link>
+            {props.account ? (
+              <Avatar
+                src={`${
+                  props.account.account.avatar_path
+                    ? `http://localhost:8080/accounting/user/avatar?avatarPath=${props.account.account.avatar_path}`
+                    : "https://th.bing.com/th/id/OIP.ItvA9eX1ZIYT8NHePqeuCgAAAA?rs=1&pid=ImgDetMain"
+                }`}
+                rounded
+              />
+            ) : (
+              <>
+                <Link to="/register">
+                  <LinkUnderLine href="#" Children="Đăng ký" />
+                </Link>
+                <Link to="/login">
+                  <LinkUnderLine href="#" Children="Đăng nhập" />
+                </Link>
+              </>
+            )}
           </div>
           <div
             className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
