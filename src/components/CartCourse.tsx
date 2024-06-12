@@ -1,11 +1,15 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { useGetCourseThumbnailMutation } from "../services/courseApi";
+import { Link } from "react-router-dom";
 
 function CartCourse(props: PropTypes.InferProps<typeof CartCourse.propTypes>) {
   return (
     <>
-      <div className="flex flex-col overflow-hidden rounded-lg shadow-lg">
+      <Link
+        to={`/course/${props.id}`}
+        className="flex flex-col overflow-hidden rounded-lg shadow-lg"
+      >
         <div className="relative flex-shrink-0">
           <img
             className="object-cover w-full h-56"
@@ -63,7 +67,7 @@ function CartCourse(props: PropTypes.InferProps<typeof CartCourse.propTypes>) {
             </div>
           </div>
         </div>
-      </div>
+      </Link>
     </>
   );
 }
@@ -75,6 +79,7 @@ CartCourse.propTypes = {
   category: PropTypes.string,
   author: PropTypes.instanceOf(Object),
   thumbnail: PropTypes.string,
+  id: PropTypes.number.isRequired,
 };
 
 export default CartCourse;

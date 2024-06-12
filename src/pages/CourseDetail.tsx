@@ -4,14 +4,15 @@ import CourseBanner from "../components/CourseBanner";
 import CourseVideoList from "../components/CourseVideoList";
 import ModalCourse from "../components/ModalCourse";
 import { useGetCourseMutation } from "../services/courseApi";
+import { useParams } from "react-router-dom";
 
-function CourseDetail(
-  props: PropTypes.InferProps<typeof CourseDetail.propTypes>
-) {
+function CourseDetail() {
+  const params = useParams();
   const [getCourse, { data }] = useGetCourseMutation();
 
   useEffect(() => {
-    getCourse(props.courseId);
+    const { id: courseId } = params as { id: string };
+    getCourse(Number.parseInt(courseId));
   }, []);
   return (
     <div>
@@ -22,9 +23,5 @@ function CourseDetail(
     </div>
   );
 }
-
-CourseDetail.propTypes = {
-  courseId: PropTypes.number.isRequired,
-};
 
 export default CourseDetail;

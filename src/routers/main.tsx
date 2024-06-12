@@ -3,6 +3,8 @@ import MainPage from "../pages/main";
 import AuthForm from "../pages/authentication/AuthForm";
 import CoursePage from "../pages/main/CoursePage";
 import TutorPage from "../pages/main/TutorPage";
+import CourseDetail from "../pages/CourseDetail";
+import Calendar from "../components/Calendar";
 
 export const router = createBrowserRouter([
   {
@@ -11,19 +13,26 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <div>
-          <CoursePage />
-          <TutorPage />
-        </div>
+        element: (
+          <div>
+            <Calendar />
+            <CoursePage />
+            <TutorPage />
+          </div>
+        ),
       },
       {
         path: "/login",
-        element: <AuthForm/>,
+        element: <AuthForm />,
       },
       {
         path: "/register",
-        element: <AuthForm/>,
+        element: <AuthForm />,
       },
-    ]
-  }
-])
+      {
+        path: "/course/:id",
+        element: <CourseDetail />,
+      },
+    ],
+  },
+]);

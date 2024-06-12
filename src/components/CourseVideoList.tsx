@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import VideoCourse from "./VideoCourse";
 import { CourseVideoResponse } from "../const/dtos";
 import VideoStreaming from "./VideoStreaming";
+import { useGetVideoQuery } from "../services/courseApi";
 
 interface CourseVideoListProps {
   courseVideos?: CourseVideoResponse[];
@@ -10,15 +11,9 @@ interface CourseVideoListProps {
 
 function CourseVideoList(props: CourseVideoListProps) {
   const [visibleSections, setVisibleSections] = useState<number>(5); // Hiển thị 5 mục ban đầu
-  const [videoSrc, setVideoSrc] = useState<string>("");
-
-  const handleVideoClick = (video: CourseVideoResponse, e: any) => {
-    e.preventDefault();
-    const url = `http://localhost:8080/courseapi/video/stream/${video.course_id}/${video.id}`;
-    console.log(url);
-
-    setVideoSrc(url);
-  };
+  const [videoSelected, setVideoSelected] = useState<
+    CourseVideoResponse | undefined
+  >(undefined);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,11 +28,20 @@ function CourseVideoList(props: CourseVideoListProps) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleVideoClick = (video?: CourseVideoResponse) => {
+    setVideoSelected(video);
+  };
   return (
     <div className="w-fit p-4 flex flex-wrap">
-      {videoSrc !== "" && (
+      {videoSelected && (
         <div className="w-1/2">
-          <VideoStreaming src={videoSrc} />
+          <VideoStreaming
+            courseId={videoSelected.course_id}
+            videoId={videoSelected.id}
+            isShow={true}
+            handleVideoClickSelected={handleVideoClick}
+          />
         </div>
       )}
       <div>

@@ -36,6 +36,7 @@ function CoursePage() {
         <div className="grid max-w-lg gap-x-20 gap-y-10 mx-auto mt-12 md:grid-cols-2 lg:grid-cols-3 md:max-w-none">
           {data?.courses.courses.map((course) => (
             <CartCourse
+              id={course.id}
               key={course.id}
               author={course.tutor.first_name + " " + course.tutor.last_name}
               title={course.name}

@@ -122,3 +122,24 @@ export interface VNPayResponse {
     }
 }
 
+export interface LoginResponse {
+    login: {
+        access_token: string;
+    }
+}
+
+export interface AccountResponse {
+    account: {
+        id: number;
+        fistname: string;
+        lastname: string;
+        user_id: number;
+        email: string;
+        birth: Date;
+        gender: Gender;
+        address: string;
+        avatar_path: string;
+        created_at: Date;
+        modified_at: Date;
+    }
+}
