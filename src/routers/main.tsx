@@ -3,6 +3,7 @@ import MainPage from "../pages/main";
 import AuthForm from "../pages/authentication/AuthForm";
 import CoursePage from "../pages/main/CoursePage";
 import TutorPage from "../pages/main/TutorPage";
+import UserProfile from "../pages/UserProfile";
 
 export const router = createBrowserRouter([
   {
@@ -11,10 +12,9 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <div>
-          <CoursePage />
-          <TutorPage />
-        </div>
+        element: <>
+        <CoursePage />
+        <TutorPage /></>
       },
       {
         path: "/login",
@@ -24,6 +24,10 @@ export const router = createBrowserRouter([
         path: "/register",
         element: <AuthForm/>,
       },
+      {
+        path: "/user",
+        element: <UserProfile />,
+      }
     ]
   }
 ])

@@ -16,7 +16,7 @@ function AuthForm() {
   
   return (
     <div className="bg-orange-50 h-full w-full flex items-center">
-      <div className="h-fit w-2/3 md:w-1/3 bg-white p-10 space-y-10 mx-auto my-0">
+      <div className="w-2/3 md:w-1/3 bg-white p-10 space-y-10 mx-auto my-0">
         <div>
           <IconPresent size="lg" />
           <h2 className="text-center font-semibold text-3xl text-slate-700">
