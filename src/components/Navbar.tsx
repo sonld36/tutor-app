@@ -1,16 +1,23 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from "react";
 import IconPresent from "./IconPresent";
-import Button from "./Button";
 import LinkUnderLine from "./LinkUnderLine";
-import { Link } from "react-router-dom";
-import { AccountResponse, UserResponse } from "../const/dtos";
+import { Link, NavLink } from "react-router-dom";
+import { AccountResponse } from "../const/dtos";
 import Avatar from "./Avatar";
+import stompClient from "../services/socketService";
+import SimplePeer from "simple-peer";
+import { useAppDispatch } from "../app/hooks";
+import { setStream } from "../features/callSlice";
+// import SimplePeer from "simple-peer";
 
 interface NavbarProps {
   account?: AccountResponse;
 }
 
 function Navbar(props: NavbarProps) {
+  const { account } = props;
+
   return (
     <>
       <nav className="bg-gray-50 border-gray-200 shadow-md sticky z-10 top-0">
@@ -76,14 +83,21 @@ function Navbar(props: NavbarProps) {
           </div>
           <div className="flex items-center justify-between w-full md:w-auto md:order-3 space-x-3">
             {props.account ? (
-              <Avatar
-                src={`${
-                  props.account.account.avatar_path
-                    ? `http://localhost:8080/accounting/user/avatar?avatarPath=${props.account.account.avatar_path}`
-                    : "https://th.bing.com/th/id/OIP.ItvA9eX1ZIYT8NHePqeuCgAAAA?rs=1&pid=ImgDetMain"
+              <NavLink
+                to={`/${account?.account.role.toLocaleLowerCase()}/${
+                  account?.account.user_id
                 }`}
-                rounded
-              />
+              >
+                <Avatar
+                  src={`${
+                    props.account.account.avatar_path
+                      ? `http://localhost:8080/accounting/user/avatar?avatarPath=${props.account.account.avatar_path}`
+                      : "https://th.bing.com/th/id/OIP.ItvA9eX1ZIYT8NHePqeuCgAAAA?rs=1&pid=ImgDetMain"
+                  }`}
+                  rounded
+                  onClick={() => {}}
+                />
+              </NavLink>
             ) : (
               <>
                 <Link to="/register">

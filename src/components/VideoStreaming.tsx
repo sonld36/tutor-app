@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useGetVideoQuery } from "../services/courseApi";
 import { CourseVideoResponse } from "../const/dtos";
+import { useAppDispatch } from "../app/hooks";
+import { setNotification } from "../features/userSlice";
+import MessageNotification from "./MessageNotification";
 
 interface VideoPlayerProps {
   courseId: number;
@@ -16,11 +19,28 @@ function VideoStreaming({
   handleVideoClickSelected,
 }: // ,
 VideoPlayerProps) {
-  const { data } = useGetVideoQuery({ courseId, videoId });
+  const { data, isError, error } = useGetVideoQuery({ courseId, videoId });
   const [showBackdrop, setShowBackdrop] = useState(isShow);
   const [isVideoPaused, setIsVideoPaused] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
+
+  if (isError) {
+    dispatch(
+      setNotification({
+        isNotification: true,
+        element: (
+          <MessageNotification
+            message={"Something went wrong or you are not enroll this course"}
+            variant="error"
+          />
+        ),
+        timeVisible: 5000,
+      })
+    );
+    return null;
+  }
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === backdropRef.current) {

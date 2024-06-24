@@ -19,7 +19,7 @@ function LinkUnderLine(
   return (
     <div className="bg-white min-w-screen">
       <a
-        href={props.href}
+        href={props.href || "#"}
         onMouseEnter={handleMouseEnter}
         onClick={props.onClick || (() => {})}
         onMouseLeave={handleMouseLeave}
@@ -42,7 +42,7 @@ LinkUnderLine.propTypes = {
   Children: PropTypes.node.isRequired,
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
-  href: PropTypes.string.isRequired,
+  href: PropTypes.string,
 };
 
 export default LinkUnderLine;

@@ -12,5 +12,6 @@ export const baseApiSlice = createApi({
         return headers;
     }
      }),
+    tagTypes: ["Course", "CourseVideo"],
     endpoints: () => ({}),
 });

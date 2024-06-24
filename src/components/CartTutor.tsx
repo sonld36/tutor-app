@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import ScheduleDateTime from "./ScheduleDateTime";
+import { NavLink } from "react-router-dom";
 
 function CartTutor(props: PropTypes.InferProps<typeof CartTutor.propTypes>) {
   return (
@@ -79,15 +79,11 @@ function CartTutor(props: PropTypes.InferProps<typeof CartTutor.propTypes>) {
           </div>
         </div>
         <div className="flex justify-center mt-2">
-          <button
-            type="button"
-            data-modal-target="timepicker-modal"
-            data-modal-toggle="timepicker-modal"
-            className="inline-flex items-center px-6 py-3 text-base font-medium leading-6 text-white transition duration-150 ease-in-out bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700"
-          >
-            View Schedule
-          </button>
-          {/* <ScheduleDateTime /> */}
+          <NavLink to={`/tutor/${props.userId}`}>
+            <button className="px-4 py-2 mb-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+              View Profile
+            </button>
+          </NavLink>
         </div>
       </div>
     </>

@@ -133,7 +133,8 @@ export interface AccountResponse {
         id: number;
         fistname: string;
         lastname: string;
-        user_id: number;
+        user_id: string;
+        role: string;
         email: string;
         birth: Date;
         gender: Gender;
@@ -141,5 +142,53 @@ export interface AccountResponse {
         avatar_path: string;
         created_at: Date;
         modified_at: Date;
+    }
+}
+
+export interface TimeDTO {
+    hour_of_day: number;
+    time_string: string;
+    day_name: string;
+    day_of_week: number;
+    day_of_month: number;
+    week_of_year: number;
+    _month: number;
+    month_name: string;
+    quarter: number;
+    _year: number;
+}
+
+export interface AvailabilityDTO {
+    id: number;
+    tutor: TutorResponse;
+    time: TimeDTO;
+}
+
+export interface AvailabilityScheduleResponse {
+    availabilities: {
+        availabilities: AvailabilityDTO[];
+    }
+}
+
+export interface AppointmentsResponse {
+    appointment: {
+        availabilities: AvailabilityDTO[];
+    }
+}
+
+export interface Schedule {
+    time_key: number;
+            is_available: boolean;
+}
+
+export interface ScheduleCreateDTO {
+    availability_schedules: {
+        availabilities: Schedule[]
+    }
+}
+
+export interface BookingResponse {
+    availabilities_booked: {
+        transaction_id: number;
     }
 }

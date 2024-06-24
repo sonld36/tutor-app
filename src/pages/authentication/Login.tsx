@@ -1,14 +1,45 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import TextField from "../../components/TextField";
 import Button from "../../components/Button";
 import { useForm } from "react-hook-form";
 import { LoginDTO, UserRoot } from "../../const/dtos";
 import { useLoginMutation } from "../../services/userApi";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../app/hooks";
+import { setNotification } from "../../features/userSlice";
+import MessageNotification from "../../components/MessageNotification";
+import { element } from "prop-types";
 
 function Login() {
   const { register, getValues } = useForm<LoginDTO>();
-  const [login, { isLoading, isSuccess }] = useLoginMutation();
+  const [login, { isLoading, isSuccess, isError }] = useLoginMutation();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  if (isSuccess) {
+    dispatch(
+      setNotification({
+        isNotification: true,
+        element: (
+          <MessageNotification message="Login success" variant="success" />
+        ),
+        timeVisible: 3000,
+      })
+    );
+
+    navigate("/");
+  }
+
+  if (isError) {
+    dispatch(
+      setNotification({
+        isNotification: true,
+        element: <MessageNotification message="Login failed" variant="error" />,
+        timeVisible: 3000,
+      })
+    );
+  }
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
@@ -22,9 +53,6 @@ function Login() {
     };
 
     await login(loginDto);
-    if (isSuccess) {
-      redirect("/");
-    }
   };
 
   return (

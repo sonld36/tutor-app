@@ -38,7 +38,7 @@ function CoursePage() {
             <CartCourse
               id={course.id}
               key={course.id}
-              author={course.tutor.first_name + " " + course.tutor.last_name}
+              author={course.tutor?.first_name + " " + course.tutor?.last_name}
               title={course.name}
               description={course.description}
               category={course.subject}

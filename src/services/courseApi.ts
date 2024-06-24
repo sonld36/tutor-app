@@ -1,4 +1,4 @@
-import { CourseEnrollmentResponse, CourseEnrollmentRootDTO, CourseListResponse, CourseResponse, CourseRootDTO, SingleCourseRootDTO } from "../const/dtos";
+import { CourseEnrollmentResponse, CourseEnrollmentRootDTO, CourseListResponse, CourseResponse, CourseRootDTO, CourseVideoResponse, SingleCourseRootDTO } from "../const/dtos";
 import { baseApiSlice } from "./baseService";
 import { paymentApiSlice } from "./paymentApi";
 
@@ -19,11 +19,12 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
                 params: { thumbnailPath }
             })
         }),
-        getCourse: builder.mutation<SingleCourseRootDTO<CourseResponse>, number>({
+        getCourse: builder.query<SingleCourseRootDTO<CourseResponse>, number>({
             query: (courseId: number) => ({
                 url: `/courseapi/course/${courseId}`,
                 method: "GET",
             }),
+            providesTags: (result, error, args) => [{ type: "CourseVideo", id: result?.course.id }],
         }),
         enrollCourse: builder.mutation<CourseEnrollmentRootDTO<CourseEnrollmentResponse>, number>({
             query: (courseId: number) => ({
@@ -46,13 +47,68 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
                 url: `/courseapi/video/stream/${courseId}/${videoId}`,
                 method: "GET",
                 responseHandler: async (response) => {
+                    if (response.status !== 400) {
+                        return "Something went wrong or you are not enroll this course";
+                    }
                     const blob = new Blob([await response.arrayBuffer()], { type: 'video/mp4' });
                     return URL.createObjectURL(blob);
                 },
+            
+            }),
+        }),
+
+        getListCourseEnroll: builder.query<CourseRootDTO<CourseListResponse>, { page: number, size: number}>({
+            query: ({
+                page, size
+            }) => ({
+                url: "/courseapi/course/enrolled",
+                method: "GET",
+                params: { page, size },
+                transformResponse: (response: CourseRootDTO<CourseListResponse>) => {
+                    return response.courses;
+                }
             })
+        }),
+
+        getCoursesByTutorId: builder.query<CourseRootDTO<CourseListResponse>, { tutorId: string, page: number, size: number}>({
+            query: ({ tutorId, page, size, }) => ({
+                url: `/courseapi/course/tutor/${tutorId}`,
+                method: "GET",
+                params: { page, size },
+            }),
+            providesTags: ["Course"],
+        }),
+
+        createCourseVideo: builder.mutation<{
+            course_video: CourseVideoResponse,
+        }, FormData>({
+            query: (body) => ({
+                url: `/courseapi/video`,
+                method: "POST",
+                body: body,
+            }),
+            invalidatesTags: (result, error, args) => [{ type: "CourseVideo", id: result?.course_video.course_id }],
+        }),
+
+        createCourse: builder.mutation<CourseResponse, FormData>({
+            query: (body) => ({
+                url: `/courseapi/course/create`,
+                method: "POST",
+                body: body,
+            }),
+            invalidatesTags: (result, error, args) => [{ type: "Course"}],
         }),
     }),
     overrideExisting: false,
 });
 
-export const { useGetCoursesMutation, useGetCourseThumbnailMutation, useGetCourseMutation, useEnrollCourseMutation, useGetVideoQuery } = courseApiSlice;
+export const { useGetCoursesMutation, 
+    useGetCourseThumbnailMutation, 
+    useGetCourseQuery, 
+    useEnrollCourseMutation, 
+    useGetVideoQuery,
+    useGetListCourseEnrollQuery,
+    useGetCoursesByTutorIdQuery,
+    useCreateCourseVideoMutation,
+    useCreateCourseMutation
+} = courseApiSlice;

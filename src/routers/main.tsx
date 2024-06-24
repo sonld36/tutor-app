@@ -3,7 +3,11 @@ import MainPage from "../pages/main";
 import AuthForm from "../pages/authentication/AuthForm";
 import CoursePage from "../pages/main/CoursePage";
 import TutorPage from "../pages/main/TutorPage";
+import CourseDetail from "../pages/CourseDetail";
+import TutorProfile from "../pages/TutorProfile";
 import UserProfile from "../pages/UserProfile";
+import CallChatVideo from "../components/CallChatVideo";
+import CallAcceptVideo from "../components/CallAcceptVideo";
 
 export const router = createBrowserRouter([
   {
@@ -12,9 +16,12 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <>
-        <CoursePage />
-        <TutorPage /></>
+        element: (
+          <>
+            <CoursePage />
+            <TutorPage />
+          </>
+        ),
       },
       {
         path: "/login",
@@ -25,9 +32,25 @@ export const router = createBrowserRouter([
         element: <AuthForm />,
       },
       {
-        path: "/user",
+        path: "/tutor/:id",
+        element: <TutorProfile />,
+      },
+      {
+        path: "/course/:id",
+        element: <CourseDetail />,
+      },
+      {
+        path: "/student/:id",
         element: <UserProfile />,
-      }
-    ]
-  }
-])
+      },
+    ],
+  },
+  {
+    path: "/call/:tutorId",
+    element: <CallChatVideo />,
+  },
+  {
+    path: "/call-accept/:tutorId",
+    element: <CallAcceptVideo />,
+  },
+]);
