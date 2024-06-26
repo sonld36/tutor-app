@@ -28,7 +28,7 @@ function AuthForm() {
           </form>
           <div className="mt-2">
             <LinkUnderLine
-              href="#"
+              href={isLogin ? "/login" : "/register"}
               onClick={() => setIsLogin(!isLogin)}
               Children={
                 isLogin ? "Create new account" : "Login with existing account"

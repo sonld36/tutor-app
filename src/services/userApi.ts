@@ -5,7 +5,7 @@ import { paymentApiSlice } from "./paymentApi";
 export const userApiSlice = baseApiSlice.injectEndpoints({
     endpoints: (builder) => ({
         register: builder.mutation({
-            query: (data: RegisterDTO) => ({
+            query: (data: UserRoot<RegisterDTO>) => ({
                 url: "/accounting/user/create",
                 method: "POST",
                 body: data,
@@ -105,4 +105,4 @@ export const userApiSlice = baseApiSlice.injectEndpoints({
     overrideExisting: true,
 });
 
-export const { useLoginMutation, useGetTutorsMutation, useCheckInitUserQuery, useAvailableTimeBySelfQuery, useAvailableTimeByTimeKeyQuery, useCreateAvailabilityTimeMutation, useBookingCallQuery, useCreateBookingCallMutation, useGetAppointmentsQuery } = userApiSlice;
+export const { useLoginMutation, useRegisterMutation,useGetTutorsMutation, useCheckInitUserQuery, useAvailableTimeBySelfQuery, useAvailableTimeByTimeKeyQuery, useCreateAvailabilityTimeMutation, useBookingCallQuery, useCreateBookingCallMutation, useGetAppointmentsQuery } = userApiSlice;

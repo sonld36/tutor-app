@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from "react";
-import DateTime from "../components/DateTime";
+import DateTime, { TimeType } from "../components/DateTime";
 import Button from "../components/Button";
 import {
   useAvailableTimeByTimeKeyQuery,
@@ -22,6 +22,9 @@ import {
 import CourseCard from "../components/CourseCard";
 import Backdrop from "../components/Backdrop";
 import CourseForm from "../components/CourseForm";
+import { useAppDispatch } from "../app/hooks";
+import { setNotification } from "../features/userSlice";
+import MessageNotification from "../components/MessageNotification";
 
 function TutorProfile() {
   const { id: tutorId } = useParams();
@@ -29,8 +32,9 @@ function TutorProfile() {
     selectFromResult: ({ data }) => ({ account: data?.account || null }),
   });
   const [date, setDate] = useState(new Date() as Date);
-  const [timeSelected, setTimeSelected] = useState<string[]>();
+  const [timeSelected, setTimeSelected] = useState<TimeType[]>();
   const [isShowCreateCourse, setIsShowCreateCourse] = useState(false);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const { availableTime } = useAvailableTimeByTimeKeyQuery(
@@ -48,8 +52,12 @@ function TutorProfile() {
         }
         return {
           availableTime:
-            data?.availabilities.availabilities.map((availability) =>
-              sliceSecondFromTime(availability.time.time_string)
+            data?.availabilities.availabilities.map(
+              (availability) =>
+                ({
+                  time: sliceSecondFromTime(availability.time.time_string),
+                  type: availability.status.toLocaleLowerCase(),
+                } as TimeType)
             ) || [],
         };
       },
@@ -57,7 +65,41 @@ function TutorProfile() {
     }
   );
 
-  const [createAvailabilityTime] = useCreateAvailabilityTimeMutation();
+  const [
+    createAvailabilityTime,
+    { isError: createAvailabilityError, isSuccess: createAvailabilitySuccess },
+  ] = useCreateAvailabilityTimeMutation();
+
+  if (createAvailabilityError) {
+    dispatch(
+      setNotification({
+        isNotification: true,
+        element: (
+          <MessageNotification
+            message="Create availability failed"
+            variant="error"
+          />
+        ),
+        timeVisible: 3000,
+      })
+    );
+  }
+
+  if (createAvailabilitySuccess) {
+    dispatch(
+      setNotification({
+        isNotification: true,
+        element: (
+          <MessageNotification
+            message="Create availability success"
+            variant="success"
+          />
+        ),
+        timeVisible: 3000,
+      })
+    );
+  }
+
   const [bookingCall, { data: bookingData, isLoading: isBookingLoading }] =
     useCreateBookingCallMutation();
 
@@ -79,7 +121,7 @@ function TutorProfile() {
     setDate(date);
   };
 
-  const timeChange = (time: string[]) => {
+  const timeChange = (time: TimeType[]) => {
     setTimeSelected(time);
   };
 
@@ -319,19 +361,19 @@ function TutorProfile() {
                     date={date}
                     timeChecked={timeSelected || availableTime}
                     onDateChange={(date: Date) => dateChange(date)}
-                    onTimeChange={(time: string[]) => timeChange(time)}
+                    onTimeChange={(time: TimeType[]) => timeChange(time)}
                   />
                 )}
                 {account?.role === "TUTOR" ? (
-                  <div className="flex">
+                  <div className="flex space-x-2 my-2">
                     <Button
                       label="Lưu"
                       onClick={() => {
-                        const availabledTime = availableTime?.map((time) =>
-                          generateTimeKey(date, time)
+                        const availabledTime = availableTime?.map(
+                          (time: TimeType) => generateTimeKey(date, time.time)
                         );
                         const timeKeys = timeSelected?.map((time) =>
-                          generateTimeKey(date, time)
+                          generateTimeKey(date, time.time)
                         );
                         const deleteSchedules = availabledTime?.filter(
                           (timeKey) => !timeKeys?.includes(timeKey)
@@ -365,7 +407,7 @@ function TutorProfile() {
                     />
                   </div>
                 ) : (
-                  <div className="flex">
+                  <div className="flex space-x-2 my-2">
                     <Button
                       label="Đặt lịch"
                       onClick={() => {
@@ -379,7 +421,7 @@ function TutorProfile() {
                         console.log(time);
 
                         const timeKeys = time?.map((time) =>
-                          generateTimeKey(date, time)
+                          generateTimeKey(date, time.time)
                         );
                         bookingCall({
                           tutorId: tutorId || "",

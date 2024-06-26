@@ -30,11 +30,16 @@ const timeInDay = [
   "23:00",
 ];
 
+export interface TimeType {
+  time: string;
+  type: "booked" | "active" | "inactive";
+}
+
 export interface DateTimeProps {
   date: Date;
-  timeChecked: string[];
+  timeChecked: TimeType[];
   onDateChange: (date: Date) => void;
-  onTimeChange: (time: string[]) => void;
+  onTimeChange: (times: TimeType[]) => void;
 }
 
 function DateTime({
@@ -69,6 +74,7 @@ function DateTime({
               selected={startDate}
               onChange={(date) => onDateChange(date as Date)}
               inline
+              minDate={new Date()}
             />
           </div>
           <label className="text-sm font-medium text-gray-900  mb-2 block">
@@ -83,18 +89,32 @@ function DateTime({
                   value=""
                   className="hidden peer"
                   name="timetable"
-                  checked={timeChecked.includes(time)}
+                  checked={timeChecked
+                    .filter((item) => item.type === "active")
+                    .map((item) => item.time)
+                    .includes(time)}
+                  disabled={timeChecked.some(
+                    (item) =>
+                      (item.time === time && item.type === "booked") ||
+                      time < new Date().toTimeString().slice(0, 5)
+                  )}
                   onChange={(e) => {
                     const checked = e.target.checked;
                     const newTimeChecked = checked
-                      ? [...timeChecked, time]
-                      : timeChecked.filter((t) => t !== time);
-                    onTimeChange(newTimeChecked);
+                      ? [
+                          ...timeChecked,
+                          {
+                            time,
+                            type: "active",
+                          },
+                        ]
+                      : timeChecked.filter((t) => t.time !== time);
+                    onTimeChange(newTimeChecked as TimeType[]);
                   }}
                 />
                 <label
                   htmlFor={time}
-                  className="inline-flex items-center justify-center w-full px-2 py-1 text-sm font-medium text-center dark:hover:text-white bg-white  border rounded-lg cursor-pointer text-gray-500 border-gray-200 dark:border-gray-700 dark:peer-checked:border-blue-500 peer-checked:border-blue-700 dark:hover:border-gray-600 dark:peer-checked:text-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-600 dark:peer-checked:bg-blue-900"
+                  className="inline-flex items-center justify-center w-full px-2 py-1 text-sm font-medium text-center dark:hover:text-white bg-white  border rounded-lg cursor-pointer text-gray-500 border-gray-200 dark:border-gray-700 dark:peer-checked:border-blue-500 peer-checked:border-blue-700 peer-disabled:border-gray-600 peer-disabled:text-white peer-disabled:bg-gray-500 dark:hover:border-gray-600 dark:peer-checked:text-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-600 dark:peer-checked:bg-blue-900"
                 >
                   {time}
                 </label>

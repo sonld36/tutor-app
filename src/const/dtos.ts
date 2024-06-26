@@ -9,9 +9,9 @@ export interface RegisterDTO {
     email: string;
     password: string;
     firstName: string;
-    gender: Gender;
+    gender?: Gender;
     lastName?: string;
-    birth: Date;
+    birth?: Date;
     address?: string;
 }
 
@@ -160,6 +160,8 @@ export interface TimeDTO {
 
 export interface AvailabilityDTO {
     id: number;
+    is_available: boolean;
+    status: string;
     tutor: TutorResponse;
     time: TimeDTO;
 }

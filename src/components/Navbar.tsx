@@ -5,10 +5,7 @@ import LinkUnderLine from "./LinkUnderLine";
 import { Link, NavLink } from "react-router-dom";
 import { AccountResponse } from "../const/dtos";
 import Avatar from "./Avatar";
-import stompClient from "../services/socketService";
-import SimplePeer from "simple-peer";
-import { useAppDispatch } from "../app/hooks";
-import { setStream } from "../features/callSlice";
+import Dropdown from "./Dropdown";
 // import SimplePeer from "simple-peer";
 
 interface NavbarProps {
@@ -83,21 +80,42 @@ function Navbar(props: NavbarProps) {
           </div>
           <div className="flex items-center justify-between w-full md:w-auto md:order-3 space-x-3">
             {props.account ? (
-              <NavLink
-                to={`/${account?.account.role.toLocaleLowerCase()}/${
-                  account?.account.user_id
-                }`}
-              >
-                <Avatar
-                  src={`${
-                    props.account.account.avatar_path
-                      ? `http://localhost:8080/accounting/user/avatar?avatarPath=${props.account.account.avatar_path}`
-                      : "https://th.bing.com/th/id/OIP.ItvA9eX1ZIYT8NHePqeuCgAAAA?rs=1&pid=ImgDetMain"
-                  }`}
-                  rounded
-                  onClick={() => {}}
-                />
-              </NavLink>
+              // <NavLink
+              //   to={`/${account?.account.role.toLocaleLowerCase()}/${
+              //     account?.account.user_id
+              //   }`}
+              // >
+
+              // </NavLink>
+              <Dropdown
+                label={
+                  <Avatar
+                    src={`${
+                      props.account.account.avatar_path
+                        ? `http://localhost:8080/accounting/user/avatar?avatarPath=${props.account.account.avatar_path}`
+                        : "https://th.bing.com/th/id/OIP.ItvA9eX1ZIYT8NHePqeuCgAAAA?rs=1&pid=ImgDetMain"
+                    }`}
+                    rounded
+                    onClick={() => {}}
+                  />
+                }
+                options={[
+                  <>
+                    <Link
+                      to={`/${account?.account.role.toLocaleLowerCase()}/${
+                        account?.account.user_id
+                      }`}
+                    >
+                      <LinkUnderLine href="" Children="Profile" />
+                    </Link>
+                  </>,
+                  <>
+                    <Link to="/login">
+                      <LinkUnderLine href="#" Children="Logout" />
+                    </Link>
+                  </>,
+                ]}
+              />
             ) : (
               <>
                 <Link to="/register">
