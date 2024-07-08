@@ -1,4 +1,4 @@
-import { CourseEnrollmentResponse, CourseEnrollmentRootDTO, CourseListResponse, CourseResponse, CourseRootDTO, CourseVideoResponse, SingleCourseRootDTO } from "../const/dtos";
+import { CourseEnrollmentResponse, CourseEnrollmentRootDTO, CourseListResponse, CourseResponse, CourseRootDTO, CourseVideoResponse, SingleCourseRootDTO, VNPayResponse } from "../const/dtos";
 import { baseApiSlice } from "./baseService";
 import { paymentApiSlice } from "./paymentApi";
 
@@ -26,21 +26,33 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
             }),
             providesTags: (result, error, args) => [{ type: "CourseVideo", id: result?.course.id }],
         }),
-        enrollCourse: builder.mutation<CourseEnrollmentRootDTO<CourseEnrollmentResponse>, number>({
-            query: (courseId: number) => ({
+        enrollCourse: builder.query<CourseEnrollmentRootDTO<CourseEnrollmentResponse>, number>({
+            query: (courseId) => ({
                 url: `/courseapi/enrollment/${courseId}`,
                 method: "GET",
-            }),
-            async onQueryStarted(courseId, { dispatch, queryFulfilled }) {
-                const { data } = await queryFulfilled;
-                if (data.course_enrollment) {
-                    await dispatch(
-                        paymentApiSlice.endpoints.createPayment
-                        .initiate({ transactionId: data.course_enrollment.transaction_id, 
-                            amount: 10000 }));
-                    
+            })
+        }),
+        createPaymentEnrollCourse: builder.mutation<VNPayResponse, { courseId: number, price: number }>({
+            queryFn: async ({ courseId, price }, { dispatch }) => {
+               try {
+                const enrolled: CourseEnrollmentRootDTO<CourseEnrollmentResponse> = await dispatch(courseApiSlice.endpoints.enrollCourse.initiate(courseId)).unwrap();
+                const createPayment: VNPayResponse = await dispatch(paymentApiSlice.endpoints.createPayment.initiate({ transactionId: enrolled.course_enrollment.transaction_id, amount: price })).unwrap();
+
+                if (!createPayment) {
+                    return { error: { status: 404, data: 'Payment not found' } };
                 }
-            }
+
+                return { data: createPayment as VNPayResponse }
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
+               } catch (error: any) {
+                if (error.status === 404) {
+                  return { error: { status: 404, data: 'Payment not found' } };
+                }
+                return { error: { status: 500, data: error.message } };
+              }
+
+
+            },
         }),
         getVideo: builder.query<string, { courseId: number, videoId: number }>({
             query: ({ courseId, videoId }) => ({
@@ -105,10 +117,11 @@ export const courseApiSlice = baseApiSlice.injectEndpoints({
 export const { useGetCoursesMutation, 
     useGetCourseThumbnailMutation, 
     useGetCourseQuery, 
-    useEnrollCourseMutation, 
+    useEnrollCourseQuery, 
     useGetVideoQuery,
     useGetListCourseEnrollQuery,
     useGetCoursesByTutorIdQuery,
     useCreateCourseVideoMutation,
-    useCreateCourseMutation
+    useCreateCourseMutation, 
+    useCreatePaymentEnrollCourseMutation
 } = courseApiSlice;

@@ -23,7 +23,7 @@ import CourseCard from "../components/CourseCard";
 import Backdrop from "../components/Backdrop";
 import CourseForm from "../components/CourseForm";
 import { useAppDispatch } from "../app/hooks";
-import { setNotification } from "../features/userSlice";
+import { setLoading, setNotification } from "../features/userSlice";
 import MessageNotification from "../components/MessageNotification";
 
 function TutorProfile() {
@@ -56,7 +56,7 @@ function TutorProfile() {
               (availability) =>
                 ({
                   time: sliceSecondFromTime(availability.time.time_string),
-                  type: availability.status.toLocaleLowerCase(),
+                  type: availability.status?.toLocaleLowerCase(),
                 } as TimeType)
             ) || [],
         };
@@ -67,7 +67,11 @@ function TutorProfile() {
 
   const [
     createAvailabilityTime,
-    { isError: createAvailabilityError, isSuccess: createAvailabilitySuccess },
+    {
+      isError: createAvailabilityError,
+      isSuccess: createAvailabilitySuccess,
+      isLoading: isCreateAvailabilityLoading,
+    },
   ] = useCreateAvailabilityTimeMutation();
 
   if (createAvailabilityError) {
@@ -84,6 +88,8 @@ function TutorProfile() {
       })
     );
   }
+
+  dispatch(setLoading(isCreateAvailabilityLoading));
 
   if (createAvailabilitySuccess) {
     dispatch(
@@ -103,6 +109,10 @@ function TutorProfile() {
   const [bookingCall, { data: bookingData, isLoading: isBookingLoading }] =
     useCreateBookingCallMutation();
 
+  useEffect(() => {
+    dispatch(setLoading(isBookingLoading));
+  }, [isBookingLoading]);
+
   const { data } = useGetCoursesByTutorIdQuery(
     {
       tutorId: tutorId || "",
@@ -113,8 +123,6 @@ function TutorProfile() {
       skip: !tutorId,
     }
   );
-
-  console.log(data?.courses.courses);
 
   const dateChange = (date: Date) => {
     setTimeSelected(undefined);

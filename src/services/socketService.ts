@@ -9,10 +9,10 @@ const stompClient = Stomp.over(
 stompClient.reconnect_delay = 5000;
 
 
-export const connect = (userId: string) => {
+export const connect = () => {
   stompClient.connect(
     {
-      "simpSessionId": userId,
+      "Authorization": "Bearer " + localStorage.getItem("token") || "",
     },
     () => {
       console.log("connected");

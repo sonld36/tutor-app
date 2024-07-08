@@ -12,8 +12,9 @@ function CallNotification(props: CallNotificationProps) {
   const { from_user_id, caller_sdp_offer } = props;
 
   const onAcceptCall = async () => {
+    const replace = from_user_id.replace(/"/g, "");
     window.open(
-      `http://localhost:5173/call-accept/${from_user_id}?caller_sdp_offer=${caller_sdp_offer}&from_user_id=${from_user_id}`,
+      `http://localhost:5173/call-accept/${replace}?caller_sdp_offer=${caller_sdp_offer}&from_user_id=${replace}`,
       "_blank",
       "width=800,height=600"
     );

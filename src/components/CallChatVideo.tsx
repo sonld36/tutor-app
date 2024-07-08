@@ -8,17 +8,20 @@ import {
   setRemoteStream,
   setStompClient,
 } from "../features/callSlice";
-import { connect } from "../services/socketService";
+import stompClient, { connect } from "../services/socketService";
 function CallChatVideo() {
   const myVideo = useRef<any>();
   const peerVideo = useRef<any>();
   const [searchParam, setSearchParams] = useSearchParams();
 
   const { data: user } = useCheckInitUserQuery();
-  const { tutorId } = useParams<{ tutorId: string }>();
+  const { tutorId } = useParams<{
+    tutorId: string;
+  }>();
+
   const [stream, setStream] = useState<MediaStream>();
   const dispatch = useAppDispatch();
-  const { remoteStream, stompClient } = useAppSelector(selectCall);
+  const { remoteStream } = useAppSelector(selectCall);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
@@ -26,8 +29,7 @@ function CallChatVideo() {
       myVideo.current.srcObject = stream;
     });
     peerVideo.current.srcObject = remoteStream;
-    connect(user?.account.user_id || "");
-    dispatch(setStompClient(stompClient));
+    connect();
   }, [tutorId, user?.account.user_id]);
 
   const startCall = async () => {
@@ -43,7 +45,60 @@ function CallChatVideo() {
 
     try {
       await pc.setLocalDescription(await pc.createOffer());
-      console.log("Offer setLocalDescription success", pc.localDescription);
+      connect();
+      stompClient.send(
+        "/app/call",
+        {
+          simpleSessionId: searchParam.get("sessionId"),
+        },
+        JSON.stringify({
+          call_request: {
+            to_user_id: tutorId,
+            from_user_id: user?.account.user_id,
+            sdp_offer: pc.localDescription,
+          },
+        })
+      );
+
+      stompClient.subscribe(
+        `/queue/call-accepted/${user?.account.user_id}`,
+        (message: any) => {
+          const { sdp } = JSON.parse(message.body).call_accept_request
+            .callee_sdp_answer;
+          pc.setRemoteDescription(
+            new RTCSessionDescription({
+              type: "answer",
+              sdp,
+            })
+          );
+
+          pc.addEventListener("connectionstatechange", (event) => {
+            if (pc.connectionState === "connected") {
+              console.log("Peers connected!");
+              
+            }
+          });
+
+          pc.onicecandidate = (event) => {
+            console.log("Sending ICE candidate to other peer", event.candidate);
+            if (event.candidate) {
+              stompClient.send(
+                "/app/ice-candidate",
+                {
+                  simpleSessionId: searchParam.get("sessionId"),
+                },
+                JSON.stringify({
+                  ice_candidate: {
+                    to_user_id: tutorId,
+                    from_user_id: user?.account.user_id,
+                    candidate: event.candidate,
+                  },
+                })
+              );
+            }
+          };
+        }
+      );
     } catch (error) {
       console.error(error);
     }

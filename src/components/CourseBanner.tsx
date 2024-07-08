@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { CourseResponse } from "../const/dtos";
-import { useEnrollCourseMutation } from "../services/courseApi";
-import {
-  paymentApiSlice,
-  useCreatePaymentMutation,
-} from "../services/paymentApi";
-import { useCheckInitUserQuery } from "../services/userApi";
+import { useCreatePaymentEnrollCourseMutation } from "../services/courseApi";
+
 import Backdrop from "./Backdrop";
 import CourseVideoUpload from "./CourseVideoUpload";
+import { useAppDispatch } from "../app/hooks";
+import { setLoading, setNotification } from "../features/userSlice";
+import MessageNotification from "./MessageNotification";
 
 interface CourseBannerProps {
   course?: CourseResponse;
@@ -16,15 +14,46 @@ interface CourseBannerProps {
 }
 
 function CourseBanner({ course, viewMode }: CourseBannerProps) {
-  const [enrollCourse] = useEnrollCourseMutation();
-  const { data: user } = useCheckInitUserQuery();
+  const dispatch = useAppDispatch();
+  const [
+    enrollCourse,
+    {
+      data: enrollData,
+      error: enrollError,
+      isLoading: enrollLoading,
+      isSuccess: enrollSuccess,
+    },
+  ] = useCreatePaymentEnrollCourseMutation();
   const [isShow, setIsShow] = useState(false);
 
   const handleEnrollCourse = async () => {
     if (course) {
-      await enrollCourse(course.id);
+      await enrollCourse({
+        courseId: course.id,
+        price: course.price,
+      });
     }
   };
+
+  dispatch(setLoading(enrollLoading));
+  if (enrollSuccess) {
+    console.log(enrollData);
+    const redirectUrl = enrollData.payment_url;
+    window.location.href = redirectUrl;
+  }
+
+  if (enrollError) {
+    dispatch(
+      setNotification({
+        isNotification: true,
+        element: (
+          <MessageNotification message="Enroll failed" variant="error" />
+        ),
+        timeVisible: 3000,
+      })
+    );
+  }
+
   return (
     <>
       <Backdrop

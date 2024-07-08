@@ -6,6 +6,7 @@ import { Link, NavLink } from "react-router-dom";
 import { AccountResponse } from "../const/dtos";
 import Avatar from "./Avatar";
 import Dropdown from "./Dropdown";
+import { userApiSlice } from "../services/userApi";
 // import SimplePeer from "simple-peer";
 
 interface NavbarProps {
@@ -13,7 +14,9 @@ interface NavbarProps {
 }
 
 function Navbar(props: NavbarProps) {
-  const { account } = props;
+  const { account } = userApiSlice.useCheckInitUserQuery(undefined, {
+    selectFromResult: ({ data }) => ({ account: data?.account || null }),
+  });
 
   return (
     <>
@@ -102,13 +105,20 @@ function Navbar(props: NavbarProps) {
                 options={[
                   <>
                     <Link
-                      to={`/${account?.account.role.toLocaleLowerCase()}/${
-                        account?.account.user_id
+                      to={`/${account?.role.toLocaleLowerCase()}/${
+                        account?.user_id
                       }`}
                     >
                       <LinkUnderLine href="" Children="Profile" />
                     </Link>
                   </>,
+                  account?.role !== "TUTOR" ? (
+                    <>
+                      <Link to="/register/tutor">
+                        <LinkUnderLine href="" Children="Become a tutor" />
+                      </Link>
+                    </>
+                  ) : undefined,
                   <>
                     <Link to="/login">
                       <LinkUnderLine href="#" Children="Logout" />
@@ -133,21 +143,21 @@ function Navbar(props: NavbarProps) {
           >
             <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 ">
               <li>
-                <a
-                  href="#"
+                <NavLink
+                  to={"/courses"}
                   className="block py-2 px-3 text-slate-600 bg-blue-700 rounded md:bg-transparent md:p-0 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:hover:bg-gray-100 md:px-2 md:py-1"
                   aria-current="page"
                 >
                   Courses
-                </a>
+                </NavLink>
               </li>
               <li>
-                <a
-                  href="#"
+                <NavLink
+                  to={"/tutors"}
                   className="block py-2 px-3 text-slate-600 bg-blue-700 rounded md:bg-transparent md:p-0 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:hover:bg-gray-100 md:px-2 md:py-1 "
                 >
                   Tutors
-                </a>
+                </NavLink>
               </li>
               <li>
                 <a

@@ -8,6 +8,9 @@ import TutorProfile from "../pages/TutorProfile";
 import UserProfile from "../pages/UserProfile";
 import CallChatVideo from "../components/CallChatVideo";
 import CallAcceptVideo from "../components/CallAcceptVideo";
+import FullCoursePage from "../pages/main/FullCoursePage";
+import FullTutorPage from "../pages/main/FullTutorPage";
+import RegisterTutorPage from "../pages/main/RegisterTutorPage";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +45,18 @@ export const router = createBrowserRouter([
       {
         path: "/student/:id",
         element: <UserProfile />,
+      },
+      {
+        path: "/courses",
+        element: <FullCoursePage />,
+      },
+      {
+        path: "/tutors",
+        element: <FullTutorPage />,
+      },
+      {
+        path: "/register/tutor",
+        element: <RegisterTutorPage />,
       },
     ],
   },

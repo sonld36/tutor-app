@@ -10,6 +10,7 @@ import CallNotification from "../../components/CallNotification";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectUser, setNotification } from "../../features/userSlice";
 import { setStompClient } from "../../features/callSlice";
+import Loading from "../../components/Loading";
 
 function MainPage(props: PropTypes.InferProps<typeof MainPage.propTypes>) {
   const navigation = useNavigation();
@@ -24,7 +25,7 @@ function MainPage(props: PropTypes.InferProps<typeof MainPage.propTypes>) {
 
   useEffect(() => {
     if (user) {
-      connect(user.account.user_id);
+      connect();
       stompClient.onConnect = () => {
         stompClient.send(
           "/app/register",
@@ -35,7 +36,10 @@ function MainPage(props: PropTypes.InferProps<typeof MainPage.propTypes>) {
             },
           })
         );
-        stompClient.subscribe(`/user/queue/incoming-call`, onIncomingCall);
+        stompClient.subscribe(
+          `/queue/incoming-call/${user.account.user_id}`,
+          onIncomingCall
+        );
         dispatch(setStompClient(stompClient));
       };
     }
@@ -95,6 +99,7 @@ function MainPage(props: PropTypes.InferProps<typeof MainPage.propTypes>) {
         />
       )}
       {/* <Calendar /> */}
+      <Loading />
       <div
         className={`
         bg-gray-100

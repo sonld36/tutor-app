@@ -17,7 +17,7 @@ function LinkUnderLine(
   };
 
   return (
-    <div className="bg-white min-w-screen">
+    <div className="bg-inherit min-w-screen">
       <a
         href={props.href || "#"}
         onMouseEnter={handleMouseEnter}

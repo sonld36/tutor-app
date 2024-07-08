@@ -115,11 +115,9 @@ export interface CourseEnrollmentRootDTO<T> {
 }
 
 export interface VNPayResponse {
-    vnpay_response: {
-        code: string;
+    code: string;
     message: string;
     payment_url: string;
-    }
 }
 
 export interface LoginResponse {

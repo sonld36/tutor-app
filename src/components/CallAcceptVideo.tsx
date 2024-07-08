@@ -4,7 +4,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { useCheckInitUserQuery } from "../services/userApi";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selectCall } from "../features/callSlice";
-import { connect } from "../services/socketService";
+import stompClient, { connect } from "../services/socketService";
 
 function CallAcceptVideo() {
   const myVideo = useRef<any>();
@@ -15,7 +15,7 @@ function CallAcceptVideo() {
   const { tutorId } = useParams<{ tutorId: string }>();
   const [stream, setStream] = useState<MediaStream>();
   const dispatch = useAppDispatch();
-  const { remoteStream, stompClient } = useAppSelector(selectCall);
+  const { remoteStream } = useAppSelector(selectCall);
 
   useEffect(() => {
     const acceptCall = async () => {
@@ -30,37 +30,56 @@ function CallAcceptVideo() {
       const pc = new RTCPeerConnection(configuration);
 
       try {
-        await pc.setRemoteDescription(
-          JSON.parse(searchParam.get("caller_sdp_offer") || "")
-        );
+        const offer = JSON.parse(searchParam.get("caller_sdp_offer") || "");
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
         const sdpAnswer = await pc.createAnswer();
-        await pc.setLocalDescription(sdpAnswer);
-        console.log("Answer setLocalDescription success", pc.localDescription);
-        stompClient?.send(
-          "/app/call-accept",
-          {},
-          JSON.stringify({
-            call_accept_request: {
-              to_user_id: searchParam.get("from_user_id"),
-              callee_sdp_answer: pc.localDescription,
-            },
-          })
-        );
+        await pc.setLocalDescription(new RTCSessionDescription(sdpAnswer));
+        connect();
+        stompClient.onConnect = () => {
+          stompClient.send(
+            "/app/call-accept",
+            {},
+            JSON.stringify({
+              call_accept_request: {
+                to_user_id: searchParam.get("from_user_id")?.toString(),
+                callee_sdp_answer: pc.localDescription,
+              },
+            })
+          );
+
+          pc.onicecandidate = (event) => {
+            console.log("onicecandidate", event.candidate);
+
+            if (event.candidate) {
+              stompClient.send(
+                "/app/candidate",
+                {},
+                JSON.stringify({
+                  candidate: event.candidate,
+                })
+              );
+            }
+          };
+        };
 
         pc.ontrack = (event) => {
           const remote = event.streams[0];
           peerVideo.current.srcObject = remote;
         };
+
+        pc.addEventListener("connectionstatechange", (event) => {
+          if (pc.connectionState === "connected") {
+            console.log("connected");
+          }
+        });
       } catch (error) {
         console.error(error);
       }
     };
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      setStream(stream);
-      myVideo.current.srcObject = stream;
-    });
-    connect(user?.account.user_id || "");
-    dispatch(setStompClient(stompClient));
+    // navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+    //   setStream(stream);
+    //   myVideo.current.srcObject = stream;
+    // });
     peerVideo.current.srcObject = remoteStream;
     acceptCall();
   }, [tutorId, user?.account.user_id]);

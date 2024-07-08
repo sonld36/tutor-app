@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "./Button";
+import { useCheckInitUserQuery } from "../services/userApi";
 
 export interface AppointmentCardProps {
   avatarPath: string;
@@ -14,6 +15,8 @@ export interface AppointmentCardProps {
 function AppointmentCard(props: AppointmentCardProps) {
   const { avatarPath, tutorName, subject, timeStart, timeEnd, date, tutorId } =
     props;
+
+  const { data: user } = useCheckInitUserQuery();
   return (
     <>
       <div
@@ -45,7 +48,7 @@ function AppointmentCard(props: AppointmentCardProps) {
               label="Call"
               onClick={() => {
                 window.open(
-                  `http://localhost:5173/call/${tutorId}?isRequest=true`,
+                  `http://localhost:5173/call/${tutorId}?isRequest=true&sessionId=${user?.account.user_id}`,
                   "_blank",
                   "width=800,height=600"
                 );

@@ -3,11 +3,21 @@ import IconPresent from "../../components/IconPresent";
 import LinkUnderLine from "../../components/LinkUnderLine";
 import Login from "./Login";
 import Register from "./Register";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { userApiSlice } from "../../services/userApi";
 
 function AuthForm() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const { account } = userApiSlice.useCheckInitUserQuery(undefined, {
+    selectFromResult: ({ data }) => ({ account: data?.account || null }),
+  });
+
+  if (account) {
+    navigate("/");
+  }
 
   useEffect(() => {
     setIsLogin(location.pathname === "/login");

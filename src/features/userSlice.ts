@@ -11,6 +11,7 @@ const inititalState: UserState = {
     avatarPath: "",
     isNotification: false,
     notification: undefined,
+    isLoading: false,
 };
 
 export const userSlice= createSlice({
@@ -33,6 +34,10 @@ export const userSlice= createSlice({
             state.isNotification = false
         },
 
+        setLoading: (state, action) => {
+            state.isLoading = action.payload;
+        },
+
 
     },
 });
@@ -40,6 +45,7 @@ export const userSlice= createSlice({
 export const {
     invisibleNotification,
     setNotification,
+    setLoading,
 } = userSlice.actions;
 
 export const selectUser = (state: { user: UserState }) => state.user;

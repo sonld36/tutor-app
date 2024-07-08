@@ -138,6 +138,7 @@ function Register() {
                 lastName: values.last_name,
               },
             };
+            console.log(registerDto);
 
             useRegister(registerDto);
           }}

@@ -11,6 +11,7 @@ export interface UserState {
     avatarPath: string;
     isNotification: boolean;
     notification?: NotificationState;
+    isLoading: boolean;
 }
 
 export enum Gender {

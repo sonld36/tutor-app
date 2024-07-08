@@ -1,4 +1,4 @@
-import { AccountResponse, AppointmentsResponse, AvailabilityScheduleResponse, BookingResponse, LoginDTO, LoginResponse, RegisterDTO, ScheduleCreateDTO, TutorListResponse, TutorResponse, UserResponse, UserRoot, VNPayResponse } from "../const/dtos";
+import { AccountResponse, AppointmentsResponse, AvailabilityScheduleResponse, BookingResponse, LoginDTO, LoginResponse, RegisterDTO, ScheduleCreateDTO, TutorListResponse, TutorResponse, TutorRootDTO, UserResponse, UserRoot, VNPayResponse } from "../const/dtos";
 import { baseApiSlice } from "./baseService";
 import { paymentApiSlice } from "./paymentApi";
 
@@ -28,7 +28,14 @@ export const userApiSlice = baseApiSlice.injectEndpoints({
         getTutors: builder.mutation<TutorListResponse, number>({
             query: (page: number) => ({
                 url: "/accounting/tutor",
-                params: { page },
+                params: { page, size: 10 },
+                method: "GET",
+            }),
+        }),
+
+        getTutor: builder.query<TutorRootDTO<TutorResponse>, string>({
+            query: (tutorId) => ({
+                url: `/accounting/tutor/${tutorId}`,
                 method: "GET",
             }),
         }),
@@ -74,8 +81,10 @@ export const userApiSlice = baseApiSlice.injectEndpoints({
                 try {
                     const booking: BookingResponse = await dispatch(userApiSlice.endpoints.bookingCall.initiate({ tutorId: props.tutorId, timeKeys: props.timeKeys }, {subscribe: false, forceRefetch: true})).unwrap();
                     const transactionId = booking.availabilities_booked.transaction_id;
+                    const tutor: TutorRootDTO<TutorResponse> = await dispatch(userApiSlice.endpoints.getTutor.initiate(props.tutorId)).unwrap();
+                    const amount = tutor.tutor.teach_fee * props.timeKeys.length;
           
-                    const payment = await dispatch(paymentApiSlice.endpoints.createPayment.initiate({ transactionId, amount: 100000 })).unwrap();
+                    const payment = await dispatch(paymentApiSlice.endpoints.createPayment.initiate({ transactionId, amount: amount })).unwrap();
           
                     if (!payment) {
                       return { error: { status: 404, data: 'Payment not found' } };
@@ -101,8 +110,23 @@ export const userApiSlice = baseApiSlice.injectEndpoints({
                 params: { page, size },
             }),
         }),
+        becomeTutor: builder.mutation<void, { teachFee: number, subject: string, resume: string }>({
+            query: (
+                { teachFee, subject, resume },
+            ) => ({
+                url: "/accounting/tutor",
+                method: "POST",
+                body: {
+                    tutor: {
+                        teach_fee: teachFee,
+                        subject,
+                        resume,
+                    }
+                },
+            }),
+        }),
     }),
     overrideExisting: true,
 });
 
-export const { useLoginMutation, useRegisterMutation,useGetTutorsMutation, useCheckInitUserQuery, useAvailableTimeBySelfQuery, useAvailableTimeByTimeKeyQuery, useCreateAvailabilityTimeMutation, useBookingCallQuery, useCreateBookingCallMutation, useGetAppointmentsQuery } = userApiSlice;
+export const { useLoginMutation, useRegisterMutation,useGetTutorsMutation, useCheckInitUserQuery, useAvailableTimeBySelfQuery, useAvailableTimeByTimeKeyQuery, useCreateAvailabilityTimeMutation, useBookingCallQuery, useCreateBookingCallMutation, useGetAppointmentsQuery, useBecomeTutorMutation, useGetTutorQuery } = userApiSlice;

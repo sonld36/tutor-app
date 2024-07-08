@@ -7,7 +7,7 @@ import { LoginDTO, UserRoot } from "../../const/dtos";
 import { useLoginMutation } from "../../services/userApi";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
-import { setNotification } from "../../features/userSlice";
+import { setLoading, setNotification } from "../../features/userSlice";
 import MessageNotification from "../../components/MessageNotification";
 import { element } from "prop-types";
 
@@ -30,6 +30,8 @@ function Login() {
 
     navigate("/");
   }
+
+  dispatch(setLoading(isLoading));
 
   if (isError) {
     dispatch(
